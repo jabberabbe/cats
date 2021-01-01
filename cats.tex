@@ -1,0 +1,291 @@
+% !TEX TS-program = LuaLaTeX
+% !TEX encoding = UTF-8 Unicode
+\documentclass[a5paper,oneside,11pt]{article}
+\usepackage[a5paper,margin=1.5cm]{geometry}
+\usepackage[pdfusetitle]{hyperref}
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\usepackage{tikz-cd}
+\usetikzlibrary{cd}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath}
+%\usepackage{amssymb}
+\usepackage{amsthm}
+
+\title{Category theory notes and exercises}
+\author{Tito Sacchi}
+
+\newtheorem{ex}{Exercise}
+\newtheorem{defn}{Definition}
+\newtheorem{thm}{Theorem}
+\newcommand\id{\mathord{\mathrm{id}}}
+\newcommand\Id{\mathord{\mathrm{Id}}}
+\newcommand\1{\mathord{\mathrm{1}}}
+\newcommand\cat[1]{\mathbf{#1}}
+\newcommand\op{\mathrm{op}}
+\newcommand\Hom[3]{\mathop{\mathsf{Hom}_{\cat{#1}}(#2, #3)}}
+\newcommand\dom{\mathop{\mathsf{dom}}}
+\newcommand\cod{\mathop{\mathsf{cod}}}
+\begin{document}
+\maketitle
+
+\section{Categories and morphisms}
+\begin{defn}
+\label{defn:monoepi}
+A morphism $f : X \rightarrow Y$ is:
+\begin{itemize}
+    \item a \textbf{monomorphism} if $ f \circ g_1 = f \circ g_2 \implies g_1 = g_2$
+        for any $g_1, g_2 : W \rightarrow X$ (we write $f : A \rightarrowtail B$);
+    \item a \textbf{epimorphism}  if $ g_1 \circ f = g_2 \circ f \implies g_1 = g_2$
+        for any $g_1, g_2 : Y \rightarrow Z$ (we write $f : A \twoheadrightarrow B$);
+    \item a \textbf{isomorphism} if there exists another morphism $g : Y \rightarrow X$
+        such that $g \circ f = \id_X$ and $f \circ g = \id_Y$.
+\end{itemize}
+\end{defn}
+\begin{defn}
+\label{defn:split}
+Two morphisms $s : X \rightarrow Y$ and $r : Y \rightarrow X$ such that
+$r \circ s = \id_A$ express $B$ as a \textbf{retract} of $A$. $s$ is
+a \textbf{split monomorphism} and a right inverse or section to $r$,
+while r is a \textbf{split epimorphism} and a left inverse or retraction to $s$.
+$s \circ r$ is a \textbf{split idempotent}.
+\end{defn}
+
+The axiom of choice states that every epimorphism in the category $\cat{Set}$ of
+sets and functions is a split epimorphism.
+
+\begin{ex}
+    Prove that a morphism $f$ that is both a monomorphism and a split
+    epimorphism is necessarily an isomorphism.
+    Argue by duality that a split monomorphism that is an epimorphism is also
+    an isomorphism.
+\end{ex}
+\begin{proof}
+    Let $g$ be the section of $f$.
+    $f \circ g = \id$ because $r$ is a split epi; therefore,
+    $f \circ g \circ f = f \circ \id$.
+    But we can apply the left cancellation law because $f$ is a mono: $g \circ f = \id$.
+    $f$ and $g$ witness the existence of an isomorphism.
+    The second argument follows by duality.
+\end{proof}
+
+\begin{ex}
+    Show that a morphism $f : X \rightarrow Y$ is a split epimorphism in a category
+    $\mathbf{C}$ if and only if for all $W \in \cat{C}$, the post-composition function
+    $f_\star~:~\Hom{C}{W}{X} \rightarrow \Hom{C}{W}{Y}$ is surjective.
+\end{ex}
+\begin{proof}
+    Assume $f$ is a split epi and let $g : Y \rightarrowtail X$
+    be the section of the splitting.
+    We can assign to each $h : C \rightarrow Y$ the morphism
+    $g \circ h : C \rightarrow X$ which is a preimage of $h$ under $f_\star$ because
+    $f \circ g \circ h = \id \circ h = h$.
+
+    Now, assume that $f_\star$ is surjective.
+    Let $g : Y \rightarrow X$ be the preimage of $\id_Y$ under $f_\star$:
+    therefore $f$ and $g$ witness a splitting that expresses $X$ as a retract of $Y$,
+    with $f$ and $g$ being the retraction and the section respectively.
+\end{proof}
+
+\begin{defn}
+    \label{defn:slice}
+    For a category $\cat{C}$ and object $C \in \cat{C}$, there is a category $C/\cat{C}$
+    called the \textbf{slice category} of $\cat{C}$ under $C$ whose objects are
+    morphisms $f : C \rightarrow X$ and morphisms between morphisms
+    $f : C \rightarrow X$ and $g : C \rightarrow Y$ are maps $h : X \rightarrow Y$
+    such that $h \circ f = g$.
+\end{defn}
+The slice category of $\cat{C}$ over $C$ ($\cat{C}/C$) is the dual of $C/\cat{C}$.
+The sometimes the slice category under $C$ is also called coslice category.
+\begin{ex}
+    Show that the category axioms hold for the slice categories $C/\cat{C}$ and $\cat{C}/C$.
+\end{ex}
+
+\section{Functors and natural transformations}
+\begin{defn}
+\label{defn:functor}
+A \textbf{functor} $F : \cat{C} \longrightarrow \cat{D}$ between categories $\cat{C}$
+and $\cat{D}$ is defined by:
+\begin{itemize}
+    \item an object $F X \in \cat{D}$ for each object $X \in \cat{C}$;
+    \item a morphism $F f : F X \rightarrow F Y$ for each morphism $f: X \rightarrow Y$.
+\end{itemize}
+\end{defn}
+The mapping should respect function composition and identity morphisms.
+A functor $F : \cat{C}^{\op} \longrightarrow \cat{D}$ is also called a contravariant functor
+between $\cat{C}$ and $\cat{D}$, while functors $F : \cat{C} \longrightarrow \cat{D}$ are
+covariant. Functors may not preserve monomorphisms or epimorphisms, but they
+necessarily preserve split monomorphisms, split epimorphisms, and isomorphisms.
+Functor can be composed in the obvious way:
+small categories (i.e. whose collections of objects and morphisms are sets) and functors
+between them define the category $\cat{Cat}$.
+
+\begin{defn}
+\label{defn:hom}
+Every locally small category $\cat{C}$ (i.e. whose hom-sets are actually sets and not proper
+classes) defines for each object $X \in \cat{C}$ a pair of covariant and contravariant
+functors $\Hom{C}{X}{-} : \cat{C} \longrightarrow \cat{Set}$ and
+$\Hom{C}{-}{X} : \cat{C}^{\op} \longrightarrow \cat{Set}$.
+The \textbf{hom-functors} map each object to a set of morphisms, and a morphism
+$f : Y \rightarrow Z$ is subject to the following mappings:
+\begin{itemize}
+    \item $\Hom{C}{X}{f}$ is the post-composition function $f_\star$, which
+        maps each morphism $g \in \Hom{C}{X}{Y}$ to the composite~$f \circ g \in \Hom{C}{X}{Z}$;
+    \item $\Hom{C}{f}{X}$ is the pre-composition function $f^\star$, which
+        maps each morphism $g \in \Hom{C}{Z}{X}$ to the composite
+        $g \circ f \in \Hom{C}{Y}{X}$.
+\end{itemize}
+\end{defn}
+These two functors together define a bifunctor $\Hom{C}{-}{-} : \cat{C}^\op \times \cat{C}
+\longrightarrow \cat{Set}$ from the product category $\cat{C}^\op \times \cat{C}$ to
+the category $\cat{Set}$ of sets and functions between them.
+
+\begin{ex}
+    Show that the hom-functors satisfy the functoriality axioms.
+\end{ex}
+\begin{proof}
+        $\Hom{C}{X}{\id_Y} = \id_{\Hom{C}{X}{Y}}$ because the post-composition
+            function $\id_\star$ is the identity by the category axioms; same
+            for $\Hom{C}{\id_Y}{X}$.
+        $\Hom{C}{X}{f \circ g} = (f \circ g)_\star = f_\star \circ g_\star =
+            \Hom{C}{X}{f} \circ \Hom{C}{X}{g}$ by the associativity of composition;
+            same for $\Hom{C}{f \circ g}{X}$.
+\end{proof}
+
+Every functor $F : \cat{C} \longrightarrow \cat{D}$ automatically defines another functor
+$F : \cat{C}^\op \longrightarrow \cat{D}^\op$.
+
+\begin{defn}
+\label{defn:comma}
+Given functors $F : \cat{D} \longrightarrow \cat{C}$ and $G : \cat{E} \longrightarrow \cat{C}$,
+the \textbf{comma category} $F \downarrow G$ has
+\begin{itemize}
+    \item as objects, triples $(D \in \cat{D}, E \in \cat{E}, f : F D  \rightarrow G E)$;
+    \item as morphisms $(D, E, f) \rightarrow (D', E', f')$, a pair
+        $(h : D \rightarrow D', k : E \rightarrow E')$, such that the following diagram
+        commutes.
+        \begin{figure}[H]
+            \centering
+            \begin{tikzcd}
+                F D \arrow[dd, "F h"'] \arrow[rr, "f"] &  & GE \arrow[dd, "G k"] \\
+                                                       &  &                      \\
+                F D' \arrow[rr, "f'"']                 &  & GE'                 
+            \end{tikzcd}
+        \end{figure}
+\end{itemize}
+Identity morphisms are $(\id_D, \id_E)$.
+Composition of morphisms is defined in the obvious way, by stacking commutative
+squares vertically.
+\end{defn}
+The functor $\dom : F \downarrow G \longrightarrow \cat{D}$ maps each object
+$(D \in \cat{D}, E \in \cat{E}, f)$ to $D$ and
+each morphism $(h, g)$ to $h$; the functor $\cod : F \downarrow G \longrightarrow \cat{E}$
+maps each object $(D, E)$ to $E$ and each morphism $(h, g)$ to $g$.
+The functoriality axioms are satisfied trivially.
+
+\begin{ex}
+    Define functors to construct the slice categories $C/\cat{C}$ and $\cat{C}/C$
+    (Definition \ref{defn:slice}) as special cases of comma categories.
+    What are the projection functors?
+\end{ex}
+\begin{proof}
+    $C/\cat{C}$ can be expressed as the comma category $\Id \downarrow \1_C$, where
+    $\Id : \cat{C} \longrightarrow \cat{C}$ is the identity functor on $\cat{C}$ and
+    $\1_C : \cat{1} \longrightarrow \cat{C}$ is the functor from the trivial category
+    $\cat{1}$ to $\cat{C}$ that maps the only object of $\cat{1}$ to $C$.
+    $\cat{C}/C$ by duality is the comma category $\1_C \downarrow \Id$.
+\end{proof}
+
+In the same way as a functor is a mapping between categories, a natural transformation
+is a structure-preserving mapping between functors.
+\begin{defn}
+    \label{defn:natural}
+    A \textbf{natural transformations} $\alpha : F \Longrightarrow G$
+    between functors $F : \cat{C} \longrightarrow \cat{D}$
+    and $G : \cat{C} \longrightarrow \cat{D}$ is a mapping $\alpha_X$, called
+    the component of $\alpha$ at $X$, for each $X \in \cat{C}$ such that for each
+    morphism $f : X \rightarrow X'$ in $\cat{C}$ the
+    following diagram commutes.
+    \begin{figure}[H]
+        \centering
+        \begin{tikzcd}
+            F X \arrow[dd, "Ff"'] \arrow[rr, "\alpha_X"] &  & GX \arrow[dd, "Gf"] \\
+                                                         &  &                     \\
+            F X' \arrow[rr, "\alpha_{X'}"']              &  & GX'                
+        \end{tikzcd}
+    \end{figure}
+\end{defn}
+A natural transformation is usually specified implicitly using its components, by
+saying that morphisms $\alpha_X$ are natural. If a variable $X$ is being used
+to index the $\alpha_X$, one may say that the arrows $\alpha$ are natural in $X$,
+with $X$ ranging in the domain category of the functors.
+
+Natural transformations can be composed in the obvious way, by composing the
+respective components.
+
+A natural transformations whose components are isomorphisms is called a
+\textbf{natural isomorphism} $\alpha : F \cong G$, and gives another natural
+transformation $\alpha^{-1}$ whose components are inverses to the components of $\alpha$.
+
+The functions $f_\star$ and $f^\star$ for a
+morphism $f : X \rightarrow Y$ in $\cat{C}$ are the components of two natural transformations
+\begin{eqnarray*}
+    f_\star : \Hom{C}{-}{X} \Longrightarrow \Hom{C}{-}{Y} \\
+    f^\star : \Hom{C}{Y}{-} \Longrightarrow \Hom{C}{X}{-}
+\end{eqnarray*}
+
+\begin{ex}
+    Recall the definition of the comma category of two functors
+    $F : \cat{D} \longrightarrow \cat{C}$ and $G : \cat{E} \longrightarrow \cat{C}$
+    (Definition \ref{defn:comma}). Construct a canonical natural transformation
+    $\alpha : F \circ \dom \Longrightarrow G \circ \cod$.
+\end{ex}
+\begin{proof}
+    The component of the natural transformation at the object
+    $(D, E, f) \in F \downarrow G$ is given by $f$ itself.
+    Then, $(F \circ \dom)(D, E, f) = FD$, $(G \circ \cod)(D, E, f) = GE$,
+    $(F \circ \dom)(h, k) = Fh$ and $(G \circ \cod)(h, k) = k$.
+    The naturality condition for $\alpha$ is exactly the same as the commuting square
+    for the morphisms in the comma category.
+\end{proof}
+
+\begin{defn}
+    \label{defn:cateq}
+    An \textbf{equivalence of categories} is defined by two functors
+    $F : \cat{C} \longrightarrow \cat{D}$ and $G : \cat{D} \longrightarrow \cat{C}$
+    together with two natural isomorphisms $\eta : G \circ F \cong \Id_\cat{C}$ and
+    $\epsilon : F \circ G \cong \Id_\cat{D}$.
+\end{defn}
+
+\begin{defn}
+    \label{defn:funcprops}
+    A functor $F : \cat{C} \longrightarrow \cat{D}$ is called:
+    \begin{itemize}
+        \item \textbf{faithful} if the function
+            $$F(-) : \Hom{C}{X}{Y} \rightarrow \Hom{D}{FX}{FY}$$ is injective;
+        \item \textbf{full} if $F(-)$ is surjective;
+        \item \textbf{essentially surjective on objects} if for every object
+            $Y \in \cat{D}$ there exists an object $X \in \cat{C}$ such that
+            $FX$ is isomorphic to $Y$.
+    \end{itemize}
+\end{defn}
+Note that fullness and faithfulness are local properties, i.e.,
+a faithful functor need not be injective on objects or morphisms,
+and a full functor need not be surjective on objects or morphisms.
+A faithful functor that is injective on objects (and therefore on morphisms)
+defines an \textbf{embedding} of $\cat{C}$ into $\cat{D}$; a fully faithful functor
+that is injective on objects defines a \textbf{full embedding} of $\cat{C}$ as a
+full subcategory of $\cat{D}$.
+
+\begin{thm}
+    \label{thm:cateq}
+    A functor that determines an equivalence of categories is full, faithful and
+    essentially surjective on objects.
+    Assuming the axiom of choice, conversely, any functor with these properties
+    defines an equivalence of categories.
+\end{thm}
+\begin{proof}
+\end{proof}
+\end{document}
+
