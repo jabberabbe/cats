@@ -3,14 +3,14 @@
 \documentclass[a5paper,oneside,11pt]{article}
 \usepackage[a5paper,margin=1.5cm]{geometry}
 \usepackage[pdfusetitle]{hyperref}
-\usepackage{fontspec}
-\usepackage{unicode-math}
+%\usepackage{fontspec}
+%\usepackage{unicode-math}
 \usepackage{tikz-cd}
 \usetikzlibrary{cd}
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{amsmath}
-%\usepackage{amssymb}
+\usepackage{amssymb}
 \usepackage{amsthm}
 
 \title{Category theory notes and exercises}
@@ -39,8 +39,8 @@ A morphism $f : X \rightarrow Y$ is:
         for any $g_1, g_2 : W \rightarrow X$ (we write $f : A \rightarrowtail B$);
     \item a \textbf{epimorphism}  if $ g_1 \circ f = g_2 \circ f \implies g_1 = g_2$
         for any $g_1, g_2 : Y \rightarrow Z$ (we write $f : A \twoheadrightarrow B$);
-    \item a \textbf{isomorphism} if there exists another morphism $g : Y \rightarrow X$
-        such that $g \circ f = \id_X$ and $f \circ g = \id_Y$.
+    \item a \textbf{isomorphism} if there exists another morphism $f^{-1} : Y \rightarrow X$
+        such that $f^{-1} \circ f = \id_X$ and $f \circ f^{-1} = \id_Y$ (we write $X \simeq Y$).
 \end{itemize}
 \end{defn}
 \begin{defn}
@@ -230,10 +230,10 @@ transformation $\alpha^{-1}$ whose components are inverses to the components of 
 
 The functions $f_\star$ and $f^\star$ for a
 morphism $f : X \rightarrow Y$ in $\cat{C}$ are the components of two natural transformations
-\begin{eqnarray*}
+\begin{align*}
     f_\star : \Hom{C}{-}{X} \Longrightarrow \Hom{C}{-}{Y} \\
     f^\star : \Hom{C}{Y}{-} \Longrightarrow \Hom{C}{X}{-}
-\end{eqnarray*}
+\end{align*}
 
 \begin{ex}
     Recall the definition of the comma category of two functors
@@ -286,6 +286,119 @@ full subcategory of $\cat{D}$.
     defines an equivalence of categories.
 \end{thm}
 \begin{proof}
+    Assume that $F : \cat{C} \longrightarrow \cat{D}$ and $G : \cat{D} \longrightarrow \cat{C}$
+    determine an equivalence of categories via natural isomorphisms $\eta : G \circ F \cong \Id_\cat{C}$
+    and $\epsilon : F \circ G \cong \Id_\cat{D}$.
+    The fact that $F$ is essentially surjective is easily proved by observing that $D \simeq FGD$
+    for all $D \in \cat{D}$ with the component $\epsilon_D$ as the witness of the isomorphism.
+
+    Now note that for any morphism $f, g : X \rightarrow Y$ and fixed isomorphisms $X \simeq X'$,
+    $Y \simeq Y'$, there is a unique morphism $f'$ such that the following diagram commutes:
+    \begin{figure}[H]
+        \centering
+        \begin{tikzcd}
+            X \arrow[d, "f"'] \arrow[r, "\simeq"] & X' \arrow[d, "\exists!f'"] \\
+            Y \arrow[r, "\simeq"']                & Y'
+        \end{tikzcd}
+    \end{figure}
+    Suppose that $Ff = Fg$, with $f, g : X \rightarrow Y$: then $GFf = GFg$. The
+    components $\eta_X$, $\eta_Y$ act as the isomorphisms to construct the
+    diagram
+    \begin{figure}[H]
+        \centering
+        \begin{tikzcd}
+            GFX \arrow[d, "GFf=GFg"'] \arrow[r, "\eta_X"] & X \arrow[d, "f\ \text{or}\ g"] \\
+            GFY \arrow[r, "\eta_Y"']                     & Y
+        \end{tikzcd}
+    \end{figure}
+    that commutes by the naturality of $\eta$.
+    Both $f$ and $g$ make the diagram commute, and the uniqueness property guarantees
+    that $f = g$.
+    This proves the faithfulness of $F$ and, by symmetry, of $G$.
+
+    Now assume $k : FX \rightarrow FY$. The following diagram shows the existence
+    of a unique $h : X \rightarrow Y$ such that both $Gk$ and $GFh$ make the square commute:
+    \begin{figure}[H]
+        \centering
+        \begin{tikzcd}
+            X \arrow[d, "h"'] \arrow[r, "\eta_X"] & GFX \arrow[d, "GFh\ \text{or}\ Gk"] \\
+            Y \arrow[r, "\eta_{Y}"']               & GFY
+        \end{tikzcd}
+    \end{figure}
+    Therefore $GFh = Gk$, whence, by faithfulness of $G$, $Fh = k$.
+    Thus $F$ is full, faithful and essentially surjective.
+
+    For the converse, suppose that $F$ is a fully faithful essentially surjective functor.
+    We shall first construct a functor $G$ in the following way:
+    \begin{itemize}
+        \item $GD$, with $D \in \cat{D}$, is chosen from the $C \in \cat{C}$ such that
+            $FC \simeq D$.
+            The existence of at least one such $C$ is guaranteed because $F$ is essentially
+            surjective.
+        \item $Gf$, with $f : X \rightarrow Y$ in $\cat{D}$, is constructed by composing $f$ with
+            isomorphisms $\epsilon_X : X \simeq FGX$ and $\epsilon_Y : Y \simeq FGY$ given by the
+            construction of $G$ and then taking the preimage of the resulting morphism
+            $FGX \rightarrow FGY$ under $F$, whose existence is guaranteed by the fullness of $F$.
+    \end{itemize}
+    We need to prove the functoriality of $G$.
+    Its action on identity morphisms is clear: to each object $X \in \cat{D}$ is assigned a single
+    isomorphism $\epsilon_X : X \simeq FGX$; the application of $G$ to the identity morphism $\id_X$
+    yields the preimage under $F$ of
+    $\epsilon_X \circ \id_X \circ \epsilon_X^{-1} = \epsilon_X \circ \epsilon_X^{-1} = \id_{FGX}$.
+    This preimage must be unique by the faithfulness of $F$ and therefore must be exactly $\id_{GX}$.
+
+    $G(f \circ g)$ with $f : Y \rightarrow Z$ and
+    $g : X \rightarrow Y$ is $F^{-1}(\epsilon_Z \circ f \circ g \circ \epsilon_X^{-1})$ (we use
+    the notation $F^{-1}$ to indicate the inverse of the bijection estabilished by $F$ on each
+    hom-set).
+    But then $F(Gf \circ Gg)$ is
+    \begin{align*}
+        & F(F^{-1}(\epsilon_Z \circ f \circ \epsilon_Y^{-1}) \circ
+        F^{-1}(\epsilon_Y \circ g \circ \epsilon_X^{-1})) & = \\
+        & F(F^{-1}(\epsilon_Z \circ f \circ \epsilon_Y^{-1})) \circ
+        F(F^{-1}(\epsilon_Y \circ g \circ \epsilon_X^{-1})) & = \\
+        & (\epsilon_Z \circ f \circ \epsilon_Y^{-1}) \circ (\epsilon_Y \circ g \circ \epsilon_X^{-1}) & = \\
+        & \epsilon_Z \circ f \circ g \circ \epsilon_X^{-1} &
+    \end{align*}
+    Thus $G(f \circ g)$ and $Gf \circ Gg$ are both valid preimages of
+    $\epsilon_Z \circ f \circ g \circ \epsilon_X^{-1}$; by the faithfulness of $F$, these are equal
+    and the functoriality of $G$ is proven.
+
+    The isomorphisms $\epsilon_X$ are by definition the components of a natural isomorphism
+    $F \circ G \cong \Id_\cat{D}$.
+    It remains to exhibit a natural isomorphism $\eta : G \circ F \cong \Id_\cat{C}$.
+    $F$ is full and faithful, so we may define the components $\eta_X$ as $F^{-1}\epsilon^{-1}_{FX}$.
+    The preimage is guaranteed to exist because $\epsilon_{FX} : FX \simeq FGFX$.
+    Fully faithful functors ``reflect'' isomorphisms, meaning that if $Ff$ is an isomorphism
+    in $\cat{D}$, $f$ is necessarily an isomorphism in $\cat{C}$; this guarantees that components
+    $\eta_X$ are isomorphisms. It remains to prove the naturality of $\eta$.
+
+    Note that in a diagram constructed as follows, if the left square commutes and the entire rectangle
+    commutes, it is easily shown that the right square commutes too (because $\gamma_1$ is an
+    isomorphism and thus is also an epimorphism).
+    \begin{figure}[H]
+    \centering
+    \begin{tikzcd}
+        A \arrow[d, "f"'] \arrow[r, "\stackrel{\gamma_1}{\simeq}"] &
+        B \arrow[d, "g"] \arrow[r, "\stackrel{\gamma_2}{\simeq}"] & C \arrow[d, "h"] \\
+        A' \arrow[r, "\stackrel{\gamma'_1}{\simeq}"']              &
+        B' \arrow[r, "\stackrel{\gamma'_2}{\simeq}"']             & C'
+    \end{tikzcd}
+    \end{figure}
+    Now consider the following diagram in $\cat{D}$:
+    \begin{figure}[H]
+        \centering
+        \begin{tikzcd}
+            FX \arrow[d, "Ff"] \arrow[r, "\epsilon_{FX}"] &
+            FGFX \arrow[r, "F\eta_X"] \arrow[d, "FGFf"] & FX \arrow[d, "Ff"] \\
+            FY \arrow[r, "\epsilon_{FY}"']                &
+            FGFY \arrow[r, "F\eta_Y"']                  & FY
+        \end{tikzcd}
+    \end{figure}
+    The square on the left commutes by the naturality of $\epsilon_{FX}$ and the rectangle
+    commutes by the definition of $\eta_X$. Therefore the right square commutes as
+    well; the faithfulness of $F$ proves that $\eta_Y \circ GFf = f \circ \eta_X$,
+    i.e., $\eta$ is natural.
 \end{proof}
 \end{document}
 
