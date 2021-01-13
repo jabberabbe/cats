@@ -212,7 +212,7 @@ is a structure-preserving mapping between functors.
         \begin{tikzcd}
             F X \arrow[dd, "Ff"'] \arrow[rr, "\alpha_X"] &  & GX \arrow[dd, "Gf"] \\
                                                          &  &                     \\
-            F X' \arrow[rr, "\alpha_{X'}"']              &  & GX'                
+            F X' \arrow[rr, "\alpha_{X'}"']              &  & GX'
         \end{tikzcd}
     \end{figure}
 \end{defn}
@@ -224,16 +224,77 @@ with $X$ ranging in the domain category of the functors.
 Natural transformations can be composed in the obvious way, by composing the
 respective components.
 
+Let $\cat{2}$ denote the category with two objects, denoted $0$ and $1$, and a
+single non-identity arrow $m : 0 \rightarrow 1$. There are two functors
+$i_0, i_1 : \cat{1} \longrightarrow \cat{2}$ that map the single object $*$
+to $0$ and $1$ respectively.
+\begin{ex}
+    Fixing a parallel pair of functors $F, G : \cat{C} \longrightarrow \cat{D}$, natural
+    transformations $\alpha : F \Longrightarrow G$ correspond bijectively to functors
+    $H : \cat{C} \times \cat{2} \longrightarrow \cat{D}$ such that $H$ restricts along
+    $i_0$ and $i_1$ (mappings $C \mapsto (C, 0)$ and $C \mapsto (C, 1)$) to the functors
+    $F$ and $G$, i.e., so that the following diagram commutes.
+    \begin{figure}[H]
+        \centering
+        \begin{tikzcd}
+            \cat{C} \arrow[r, "i_0"] \arrow[rd, "F"'] & \cat{C} \times \cat{2} \arrow[d, "H"]
+                                                      & \cat{C} \arrow[l, "i_1"'] \arrow[ld, "G"] \\
+                                                      & \cat{D}                               &
+        \end{tikzcd}
+    \end{figure}
+\end{ex}
+\begin{proof}
+    Given a natural transformation $\alpha$, we can define the functor $H$ as follows:
+    \begin{itemize}
+        \item its action on objects is $(X, 0) \mapsto FX$, $(X, 1) \mapsto GX$
+        \item its action on morphisms $(f : X \longrightarrow Y, g)$ is:
+            \begin{itemize}
+                \item $Ff$ if $g = \id_0$,
+                \item $Gf$ if $g = \id_1$,
+                \item $\alpha_Y \circ Ff = Gf \circ \alpha_X$ (by the naturality of $\alpha$)
+                    if $g = m$.
+            \end{itemize}
+    \end{itemize}
+    The commutativity of the diagram above is trivial.
+
+    $H\id_{(X, M)} = H(\id_X, \id_M)$ is necessarily $\id$ by the functoriality of $F$ and $G$.
+    By the definition of $H$ it follows that
+    $$H(f \circ g, \id_0) = F(f \circ g) = Ff \circ Fg = H(f, \id_0) \circ H(g, \id_0);$$ the same
+    argument applies for $H(f \circ g, \id_1)$.
+    For $g : X \rightarrow Y$ and $f : Y \rightarrow Z$, we also have that
+    $$H(f \circ g, m) = G(f \circ g) \circ \alpha_X = Gf \circ (Gg \circ \alpha_X) =
+    H(f, \id_1) \circ H(g, m);$$ this is sufficient to complete the proof of the functoriality
+    of $H$ (note that there is no pair of non-identity composable morphisms in $\cat{2}$).
+
+    We have constructed the required functor from a natural transformation; we shall proceed by
+    exhibiting the components of a natural transformation $\alpha$
+    from a functor $H$ that fulfills the above requirements.
+    We define the component $\alpha_X : FX \rightarrow GX$, with $X \in \cat{C}$ as $H(\id_X, m)$.
+    Then
+    \begin{equation*}
+        \begin{split}
+            Gf \circ \alpha_X &= Gf \circ H(\id_X, m) \\ &= H(f, \id_1) \circ H(\id_X, m) =
+            H(f, m) \\ &= H(\id_Y, m) \circ H(f, \id_0) \\ &= \alpha_Y \circ Ff;
+        \end{split}
+    \end{equation*}
+    this proves the naturality of $\alpha$.
+
+    It follows easily that the constructed mappings between natural
+    transformations $\alpha$ and functors $H$ are inverses to each other.
+\end{proof}
+
 A natural transformations whose components are isomorphisms is called a
 \textbf{natural isomorphism} $\alpha : F \cong G$, and gives another natural
 transformation $\alpha^{-1}$ whose components are inverses to the components of $\alpha$.
 
 The functions $f_\star$ and $f^\star$ for a
 morphism $f : X \rightarrow Y$ in $\cat{C}$ are the components of two natural transformations
-\begin{align*}
-    f_\star : \Hom{C}{-}{X} \Longrightarrow \Hom{C}{-}{Y} \\
-    f^\star : \Hom{C}{Y}{-} \Longrightarrow \Hom{C}{X}{-}
-\end{align*}
+\begin{equation*}
+    \begin{split}
+        f_\star : \Hom{C}{-}{X} & \Longrightarrow \Hom{C}{-}{Y} \\
+        f^\star : \Hom{C}{Y}{-} & \Longrightarrow \Hom{C}{X}{-} \\
+    \end{split}
+\end{equation*}
 
 \begin{ex}
     Recall the definition of the comma category of two functors
@@ -351,15 +412,18 @@ full subcategory of $\cat{D}$.
     $g : X \rightarrow Y$ is $F^{-1}(\epsilon_Z \circ f \circ g \circ \epsilon_X^{-1})$ (we use
     the notation $F^{-1}$ to indicate the inverse of the bijection estabilished by $F$ on each
     hom-set).
-    But then $F(Gf \circ Gg)$ is
-    \begin{align*}
-        & F(F^{-1}(\epsilon_Z \circ f \circ \epsilon_Y^{-1}) \circ
-        F^{-1}(\epsilon_Y \circ g \circ \epsilon_X^{-1})) & = \\
-        & F(F^{-1}(\epsilon_Z \circ f \circ \epsilon_Y^{-1})) \circ
-        F(F^{-1}(\epsilon_Y \circ g \circ \epsilon_X^{-1})) & = \\
-        & (\epsilon_Z \circ f \circ \epsilon_Y^{-1}) \circ (\epsilon_Y \circ g \circ \epsilon_X^{-1}) & = \\
-        & \epsilon_Z \circ f \circ g \circ \epsilon_X^{-1} &
-    \end{align*}
+    But then
+    \begin{equation*}
+        \begin{split}
+            F(Gf \circ Gg) &=
+            F(F^{-1}(\epsilon_Z \circ f \circ \epsilon_Y^{-1}) \circ
+            F^{-1}(\epsilon_Y \circ g \circ \epsilon_X^{-1})) \\
+            &= F(F^{-1}(\epsilon_Z \circ f \circ \epsilon_Y^{-1})) \circ
+            F(F^{-1}(\epsilon_Y \circ g \circ \epsilon_X^{-1})) \\
+            &= (\epsilon_Z \circ f \circ \epsilon_Y^{-1}) \circ (\epsilon_Y \circ g \circ \epsilon_X^{-1}) \\
+            &= \epsilon_Z \circ f \circ g \circ \epsilon_X^{-1}.
+        \end{split}
+    \end{equation*}
     Thus $G(f \circ g)$ and $Gf \circ Gg$ are both valid preimages of
     $\epsilon_Z \circ f \circ g \circ \epsilon_X^{-1}$; by the faithfulness of $F$, these are equal
     and the functoriality of $G$ is proven.
