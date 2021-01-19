@@ -22,6 +22,7 @@
 \newcommand\id{\mathord{\mathrm{id}}}
 \newcommand\Id{\mathord{\mathrm{Id}}}
 \newcommand\1{\mathord{\mathrm{1}}}
+\newcommand\power[1]{\mathcal{P}(#1)}
 \newcommand\cat[1]{\mathbf{#1}}
 \newcommand\op{\mathrm{op}}
 \newcommand\Hom[3]{\mathop{\mathsf{Hom}_{\cat{#1}}(#2, #3)}}
@@ -463,6 +464,45 @@ full subcategory of $\cat{D}$.
     commutes by the definition of $\eta_X$. Therefore the right square commutes as
     well; the faithfulness of $F$ proves that $\eta_Y \circ GFf = f \circ \eta_X$,
     i.e., $\eta$ is natural.
+\end{proof}
+
+\begin{ex}
+    $\cat{\Gamma}$ is the category whose objects are all finite sets, and whose morphisms
+    from $S$ to $T$ are the maps $\theta : S \rightarrow \power{T}$ such that $\theta(a)$
+    and $\theta(b)$ are disjoint when $a \neq b$. The composite of
+    $\theta : S \rightarrow \power{T}$ and $\phi : T \rightarrow \power{U}$ is
+    $\psi : S \rightarrow \power{U}$ where $\phi(a) = \bigcup_{b \in \theta(a)} \phi(b)$.
+
+    Prove that $\cat{\Gamma}$ is equivalent to the opposite of the category $\cat{Fin_*}$
+    of finite pointed sets and basepoint preserving functions.
+\end{ex}
+\begin{proof}
+    The equivalence is proven by constructing a fully faithful essentially surjective on objects
+    functor $F : \cat{Fin_*} \longrightarrow \cat{\Gamma}^\op$.
+    The functor $F$ is defined as follows:
+    \begin{itemize}
+        \item $F(S)$ with $\bullet \in S$ being the basepoint, is the set $S \backslash \{\bullet\}$.
+        \item $F(f)$, with $f : A \rightarrow B$, assigns to each $b \in B \backslash \{\bullet\}$
+            its set of non-basepoint preimages $\{a \in A \backslash \{\bullet\}\ |\ f(a) = b\}$.
+    \end{itemize}
+    Note that $F(g \circ f)$, with $f : A \rightarrow B$ and $g : B \rightarrow C$, is the mapping
+    $c \mapsto \{a \in A \backslash \{\bullet\}\ |\ g(f(a)) = c\}$. This coincides with the set
+    $\{a \in A \backslash \{\bullet\}\ |\ (\exists b \in B \backslash \{\bullet\}\ |\ f(a) = b \wedge g(b) = c)\} =
+    \bigcup_{b \in Fg(c)} Ff(b) = Ff \circ Fg$.
+    It is easy to check that $F$ preserves identity arrows; therefore $F$ is a proper functor.
+
+    The faithfulness of $F$ follows from the fact that for a pair of distinct parallel morphisms
+    $f, g : A \rightarrow B$ there has to be at least an element $a \in A \backslash \{\bullet\}$
+    such that $f(a) \neq g(a)$. But then $a \in Ff(f(a)) \wedge a \notin Fg(f(a))$: therefore the
+    two functions $Ff$ and $Fg$ are distinct.
+
+    $F$ is full because to each mapping $f : A \backslash \{\bullet\} \rightarrow \power{B \backslash \{\bullet\}}$
+    in $\cat{\Gamma}$ we can assign a function that maps each $b \in B \backslash \{\bullet\}$ to the unique (because of
+    the disjointness of images under $f$) $a \in A \backslash \{\bullet\}$ such that $b \in f(a)$, or to the the basepoint
+    $\bullet \in A$ if such a preimage does not exist.
+
+    Finally, $F$ is essentially surjective since each set $A$ can be equipped with a basepoint $\bullet$
+    to obtain a pointed set that is brought to $A$ under the action of $F$.
 \end{proof}
 \end{document}
 
