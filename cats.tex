@@ -6,6 +6,7 @@
 %\usepackage{fontspec}
 %\usepackage{unicode-math}
 \usepackage{tikz-cd}
+\usepackage{quiver}
 \usetikzlibrary{cd}
 \usepackage{float}
 \usepackage{graphicx}
@@ -28,6 +29,10 @@
 \newcommand\Hom[3]{\mathop{\mathsf{Hom}_{\cat{#1}}(#2, #3)}}
 \newcommand\dom{\mathop{\mathsf{dom}}}
 \newcommand\cod{\mathop{\mathsf{cod}}}
+\newcommand\fcat[2]{[\cat{#1}, \cat{#2}]}
+\font\maljapanese=dmjhira at 2.8ex
+\newcommand\yo{\text{\maljapanese\char"47}\!}
+\newcommand\coyo{\raisebox{-0.16em}{\rotatebox[origin=c]{180}{\text{\maljapanese\char"47}}}\!\!}
 \begin{document}
 \maketitle
 
@@ -75,12 +80,15 @@ sets and functions is a split epimorphism.
     Show that a morphism $f : X \rightarrow Y$ is a split epimorphism in a category
     $\mathbf{C}$ if and only if for all $W \in \cat{C}$, the post-composition function
     $f_\star~:~\Hom{C}{W}{X} \rightarrow \Hom{C}{W}{Y}$ is surjective.
+
+    By duality, a morphism $f : X \rightarrow Y$ is a split monomorphism iff
+    for all $W \in \cat{C}$ the pre-composition function $f^\star$ is surjective.
 \end{ex}
 \begin{proof}
     Assume $f$ is a split epi and let $g : Y \rightarrowtail X$
     be the section of the splitting.
-    We can assign to each $h : C \rightarrow Y$ the morphism
-    $g \circ h : C \rightarrow X$ which is a preimage of $h$ under $f_\star$ because
+    We can assign to each $h : W \rightarrow Y$ the morphism
+    $g \circ h : W \rightarrow X$ which is a preimage of $h$ under $f_\star$ because
     $f \circ g \circ h = \id \circ h = h$.
 
     Now, assume that $f_\star$ is surjective.
@@ -88,6 +96,9 @@ sets and functions is a split epimorphism.
     therefore $f$ and $g$ witness a splitting that expresses $X$ as a retract of $Y$,
     with $f$ and $g$ being the retraction and the section respectively.
 \end{proof}
+Interestingly, a morphism $f : X \rightarrow Y$ is a (not necessarily split) monomorphism
+iff the post-composition function $f_\star$ is injective, and f is a (not necessarily split)
+epimorphism iff the pre-composition function $f^\star$ is injective.
 
 \begin{defn}
     \label{defn:slice}
@@ -97,8 +108,8 @@ sets and functions is a split epimorphism.
     $f : C \rightarrow X$ and $g : C \rightarrow Y$ are maps $h : X \rightarrow Y$
     such that $h \circ f = g$.
 \end{defn}
-The slice category of $\cat{C}$ over $C$ ($\cat{C}/C$) is the dual of $C/\cat{C}$.
-The sometimes the slice category under $C$ is also called coslice category.
+The slice category of $\cat{C}$ over $C$ ($\cat{C}/C$) is defined as ${(C/\cat{C}^\op)}^\op$.
+Sometimes the slice category under $C$ is also called coslice category.
 \begin{ex}
     Show that the category axioms hold for the slice categories $C/\cat{C}$ and $\cat{C}/C$.
 \end{ex}
@@ -138,20 +149,20 @@ $f : Y \rightarrow Z$ is subject to the following mappings:
         $g \circ f \in \Hom{C}{Y}{X}$.
 \end{itemize}
 \end{defn}
-These two functors together define a bifunctor $\Hom{C}{-}{-} : \cat{C}^\op \times \cat{C}
-\longrightarrow \cat{Set}$ from the product category $\cat{C}^\op \times \cat{C}$ to
+These two functors together define a bifunctor $$\Hom{C}{-}{-} : \cat{C}^\op \times \cat{C}
+\longrightarrow \cat{Set}$$ from the product category $\cat{C}^\op \times \cat{C}$ to
 the category $\cat{Set}$ of sets and functions between them.
 
 \begin{ex}
     Show that the hom-functors satisfy the functoriality axioms.
 \end{ex}
 \begin{proof}
-        $\Hom{C}{X}{\id_Y} = \id_{\Hom{C}{X}{Y}}$ because the post-composition
-            function $\id_\star$ is the identity by the category axioms; same
-            for $\Hom{C}{\id_Y}{X}$.
+        We have that $\Hom{C}{X}{\id_Y} = \id_{\Hom{C}{X}{Y}}$ because the post-composition
+            func\-tion $\id_\star$ is the identity by the category axioms; the same
+            holds for $\Hom{C}{\id_Y}{X}$.
         $\Hom{C}{X}{f \circ g} = (f \circ g)_\star = f_\star \circ g_\star =
-            \Hom{C}{X}{f} \circ \Hom{C}{X}{g}$ by the associativity of composition;
-            same for $\Hom{C}{f \circ g}{X}$.
+            \Hom{C}{X}{f} \circ \Hom{C}{X}{g}$ follows from the associativity of composition;
+            the same holds for $\Hom{C}{f \circ g}{X}$.
 \end{proof}
 
 Every functor $F : \cat{C} \longrightarrow \cat{D}$ automatically defines another functor
@@ -223,7 +234,8 @@ to index the $\alpha_X$, one may say that the arrows $\alpha$ are natural in $X$
 with $X$ ranging in the domain category of the functors.
 
 Natural transformations can be composed in the obvious way, by composing the
-respective components.
+respective components. Therefore functors between two categories $\cat{C}$
+and $\cat{D}$ form the \textbf{functor category}, denoted $\fcat{C}{D}$.
 
 Let $\cat{2}$ denote the category with two objects, denoted $0$ and $1$, and a
 single non-identity arrow $m : 0 \rightarrow 1$. There are two functors
@@ -355,7 +367,7 @@ full subcategory of $\cat{D}$.
     for all $D \in \cat{D}$ with the component $\epsilon_D$ as the witness of the isomorphism.
 
     Now note that for any morphism $f, g : X \rightarrow Y$ and fixed isomorphisms $X \simeq X'$,
-    $Y \simeq Y'$, there is a unique morphism $f'$ such that the following diagram commutes:
+    $Y \simeq Y'$, there is a unique morphism $f'$ such that the following diagram commutes.
     \begin{figure}[H]
         \centering
         \begin{tikzcd}
@@ -504,5 +516,100 @@ full subcategory of $\cat{D}$.
     Finally, $F$ is essentially surjective since each set $A$ can be equipped with a basepoint $\bullet$
     to obtain a pointed set that is brought to $A$ under the action of $F$.
 \end{proof}
+
+\section{Representable functors and Yoneda lemma}
+\begin{defn}
+    \label{defn:repr}
+    A functor $F : \cat{C} \longrightarrow \cat{Set}$ is \textbf{representable} iff it is naturally isomorphic to
+    a covariant hom-functor of the appropriate variance represented by some object $X$ in the locally small
+    category $\cat{C}$.
+    In other words, a covariant functor $F : \cat{C} \longrightarrow \cat{Set}$ is represented by $X$ iff
+    $F \cong \Hom{C}{X}{-}$.
+    A contravariant functor $F : \cat{C}^\op \longrightarrow \cat{Set}$ is represented by $X$ iff
+    $F \cong \Hom{C}{-}{X}$.
+\end{defn}
+The adjective ``free'' usually denotes an object that represents a covariant functor.
+As an example, the free group on a single generator ($\mathbb{Z}$) represents the covariant forgetful
+functor $\cat{Grp} \longrightarrow \cat{Set}$ that brings a group to its set of elements, for a
+group homomorphism $\mathbb{Z} \rightarrow G$ is uniquely determined by the image of the generator $1$.
+The free unital ring $\mathbb{Z}[x]$ represents the forgetful functor $\cat{Ring} \longrightarrow \cat{Set}$.
+
+\begin{ex}
+    Suppose $F : \cat{C} \longrightarrow \cat{Set}$ is equivalent to $G : \cat{D} \longrightarrow \cat{Set}$ in the
+    sense that there is an equivalence of categories $H : \cat{C} \longrightarrow \cat{D}$ such that there exists a
+    natural isomorphism $F \cong GH$.
+    \begin{enumerate}
+        \item If $F$ is representable, then is $G$ representable?
+        \item If $G$ is representable, then is $F$ representable?
+    \end{enumerate}
+\end{ex}
+\begin{proof}
+    Let $\mu : F \cong GH$, $\alpha : F \cong \Hom{C}{M}{-}$, $\epsilon : HH^{-1} \cong \Id_D$.
+    We prove that the functor $G$ is represented by the object $HM \in \cat{D}$.
+    First, note that both $H(-)$ and $H^{-1}(-)$, as mappings between hom-sets, are bijections as a result
+    of Theorem \ref{thm:cateq} and that any isomorphism $f$ in a category defines necessarily bijective
+    pre- and post-composition functions $f^*$ and $f_*$.
+    We define the components of the natural isomorphism $\beta : G \cong \Hom{D}{HX}{-}$ as the dashed
+    composites in the following diagram.
+    \begin{figure}[H]
+        \centering
+        \resizebox{\linewidth}{!}{%
+            % https://q.uiver.app/?q=WzAsMTIsWzEsMSwiXFxIb217Q317TX17SF57LTF9WH0iXSxbMiwxLCJcXEhvbXtEfXtITX17SEheey0xfVh9Il0sWzMsMSwiXFxIb217RH17SE19e1h9Il0sWzEsMiwiXFxIb217Q317TX17SF57LTF9WX0iXSxbMiwyLCJcXEhvbXtEfXtITX17SEheey0xfVl9Il0sWzMsMiwiXFxIb217RH17SE19e1l9Il0sWzAsMCwiRkheey0xfVgiXSxbMCwzLCJGSF57LTF9WSJdLFsyLDAsIkdISF57LTF9WCJdLFs0LDAsIkdYIl0sWzIsMywiR0hIXnstMX1ZIl0sWzQsMywiR1kiXSxbMCwxLCJILSIsMCx7InN0eWxlIjp7InRhaWwiOnsibmFtZSI6ImFycm93aGVhZCJ9fX1dLFszLDQsIkgtIiwyLHsic3R5bGUiOnsidGFpbCI6eyJuYW1lIjoiYXJyb3doZWFkIn19fV0sWzQsNSwiKFxcZXBzaWxvbl9YKV8qIiwyLHsic3R5bGUiOnsidGFpbCI6eyJuYW1lIjoiYXJyb3doZWFkIn19fV0sWzAsMywiKEheey0xfWYpXyoiLDJdLFsyLDUsImZfKiJdLFs2LDcsIkZIXnstMX1mIiwyXSxbMCw2LCJcXGFscGhhX3tIXnstMX1YfSIsMCx7InN0eWxlIjp7InRhaWwiOnsibmFtZSI6ImFycm93aGVhZCJ9fX1dLFs3LDMsIlxcYWxwaGFfe0heey0xfVl9IiwwLHsic3R5bGUiOnsidGFpbCI6eyJuYW1lIjoiYXJyb3doZWFkIn19fV0sWzYsOCwiXFxtdV97SF57LTF9WH0iLDAseyJzdHlsZSI6eyJ0YWlsIjp7Im5hbWUiOiJhcnJvd2hlYWQifX19XSxbOCw5LCJHXFxlcHNpbG9uX1giLDAseyJzdHlsZSI6eyJ0YWlsIjp7Im5hbWUiOiJhcnJvd2hlYWQifX19XSxbNywxMCwiXFxtdV97SF57LTF9WX0iLDIseyJzdHlsZSI6eyJ0YWlsIjp7Im5hbWUiOiJhcnJvd2hlYWQifX19XSxbMTAsMTEsIkdcXGVwc2lsb25fWSIsMix7InN0eWxlIjp7InRhaWwiOnsibmFtZSI6ImFycm93aGVhZCJ9fX1dLFs5LDExLCJmIl0sWzIsOSwiXFxiZXRhX1giLDIseyJzdHlsZSI6eyJ0YWlsIjp7Im5hbWUiOiJhcnJvd2hlYWQifSwiYm9keSI6eyJuYW1lIjoiZGFzaGVkIn19fV0sWzUsMTEsIlxcYmV0YV9ZIiwwLHsic3R5bGUiOnsidGFpbCI6eyJuYW1lIjoiYXJyb3doZWFkIn0sImJvZHkiOnsibmFtZSI6ImRhc2hlZCJ9fX1dLFsxLDQsIihISF57LTF9ZilfKiIsMl0sWzEsMiwiKFxcZXBzaWxvbl9YKV8qIiwwLHsic3R5bGUiOnsidGFpbCI6eyJuYW1lIjoiYXJyb3doZWFkIn19fV1d
+            \begin{tikzcd}[ampersand replacement=\&]
+                {FH^{-1}X} \&\& {GHH^{-1}X} \&\& GX \\
+                \& {\Hom{C}{M}{H^{-1}X}} \& {\Hom{D}{HM}{HH^{-1}X}} \& {\Hom{D}{HM}{X}} \\
+                \& {\Hom{C}{M}{H^{-1}Y}} \& {\Hom{D}{HM}{HH^{-1}Y}} \& {\Hom{D}{HM}{Y}} \\
+                {FH^{-1}Y} \&\& {GHH^{-1}Y} \&\& GY
+                \arrow["{H(-)}", tail reversed, from=2-2, to=2-3]
+                \arrow["{H(-)}"', tail reversed, from=3-2, to=3-3]
+                \arrow["{(\epsilon_X)_*}"', tail reversed, from=3-3, to=3-4]
+                \arrow["{(H^{-1}f)_*}"', from=2-2, to=3-2]
+                \arrow["{f_*}", from=2-4, to=3-4]
+                \arrow["{FH^{-1}f}"', from=1-1, to=4-1]
+                \arrow["{\alpha_{H^{-1}X}}", tail reversed, from=2-2, to=1-1]
+                \arrow["{\alpha_{H^{-1}Y}}", tail reversed, from=4-1, to=3-2]
+                \arrow["{\mu_{H^{-1}X}}", tail reversed, from=1-1, to=1-3]
+                \arrow["{G\epsilon_X}", tail reversed, from=1-3, to=1-5]
+                \arrow["{\mu_{H^{-1}Y}}"', tail reversed, from=4-1, to=4-3]
+                \arrow["{G\epsilon_Y}"', tail reversed, from=4-3, to=4-5]
+                \arrow["Gf", from=1-5, to=4-5]
+                \arrow["{\beta_X}"', dashed, tail reversed, from=2-4, to=1-5]
+                \arrow["{\beta_Y}", dashed, tail reversed, from=3-4, to=4-5]
+                \arrow["{(HH^{-1}f)_*}"', from=2-3, to=3-3]
+                \arrow["{(\epsilon_X)_*}", tail reversed, from=2-3, to=2-4]
+            \end{tikzcd}%
+        }
+    \end{figure}
+    The two inner squares commute by the naturality of $\epsilon$ and functoriality of $H$.
+    The outer rectangle commutes by the naturality of $\mu$ and $\epsilon$ and the square
+    on the left side commutes by the naturality of $\alpha$.
+    Therefore the entire diagram commutes as well, and the naturality of $\beta$ (on the right)
+    is proven.
+
+    The proof of Part 2 follows directly by noting that a na\-tu\-ral iso\-mor\-phism $FH^{-1} \cong G$
+    can be constructed as the composition of $\mu$ and $\epsilon$ and by repeating the same construction
+    with $F$ and $G$ interchanged and $H^{-1}$ instead of $H$.
+\end{proof}
+
+\begin{defn}
+    \label{defn:subfunctor}
+    A functor $F$ defines a \textbf{subfunctor} of $G$ is there is a natural transformation
+    $\alpha : F \Longrightarrow G$ whose components are monomorphisms.
+\end{defn}
+\begin{ex}
+    In the case of $G : \cat{C}^\op \longrightarrow \cat{Set}$, a subfunctor is given by a collection of subsets
+    $FX \subseteq GX$ so that each $Gf : GY \rightarrow GX$ restricts to a function $Ff : FY \rightarrow FX$.
+    Characterize those subsets that assemble into a subfunctor of the represented functor $\Hom{C}{-}{C}$.
+\end{ex}
+
+What follows is the most important result in category theory, which is a vast generalisation of the
+result widely known in group theory as Cayley's theorem.
+\begin{thm}[Yoneda lemma]
+    \label{thm:yoneda}
+    The set of natural transformations $\alpha : \Hom{C}{M}{-} \Longrightarrow F$ is
+    in bijective correspondence with elements $x \in FM$ under the mapping $\alpha \mapsto \alpha_M(\id_M)$.
+    $$\Hom{\fcat{C}{Set}}{\Hom{C}{M}{-}}{F} \cong FM$$
+    Moreover, this bijective mapping is natural in $M$ and $F$.
+\end{thm}
 \end{document}
 
